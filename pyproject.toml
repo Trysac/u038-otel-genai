@@ -17,7 +17,9 @@ classifiers = [
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
-dependencies = []
+dependencies = [
+    "opentelemetry-api>=1.27,<2",
+]
 
 [project.urls]
 Homepage = "https://github.com/Trysac/u038-otel-genai"
