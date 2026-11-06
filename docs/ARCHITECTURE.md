@@ -2,28 +2,25 @@
 
 ## Purpose
 
-`trysac-otel-genai` is a small, dependency-free Python library: OpenTelemetry spans and metrics following the GenAI semantic conventions for LLM calls and tool executions, depending only on opentelemetry-api
+`trysac-otel-genai` (import name `otel_genai`) is a small Python library that produces OpenTelemetry spans and metrics following the GenAI semantic conventions v1.37.0 for LLM calls and tool executions. It depends only on `opentelemetry-api`.
 
 ## Shape
 
 ```text
 caller code --> otel_genai (public API in __init__.py)
                     |
-                    +-- pure functions, no I/O, no global state
+                    +-- core.py: GenAITelemetry, LLMSpan (spans and metrics)
+                    +-- attributes.py: convention names and constants
+                    +-- errors.py: GenAITelemetryError
+                    +-- testing.py: in-memory recorders (not exported from __init__)
 ```
 
-- **Public API**: the names listed in `__all__` of `src/otel_genai/__init__.py`. Anything else is
-  internal and may change without a major version.
-- **Errors**: invalid input raises built-in exceptions (`ValueError`, `TypeError`) with a clear
-  message; the library never prints or exits.
-- **Side effects**: none. If a feature needs I/O, isolate it in its own module behind a small
-  interface and record the choice in an ADR.
-
-## Quality contract
-
-`scripts/check.py` is the single definition of the gates; `fabrica.json` tells the factory and CI
-how to run it. See [TESTING.md](TESTING.md).
+- **Public API**: `GenAITelemetry`, `LLMSpan`, `GenAITelemetryError` and `__version__`, as listed in `__all__` of `src/otel_genai/__init__.py`. `otel_genai.testing` is a separate public module.
+- **Spans**: started with `start_as_current_span`, with `record_exception=False` and `set_status_on_exception=False`; the library records the exception once and sets the status itself.
+- **Metrics**: two histograms are created when `GenAITelemetry` is constructed. Metric recording failures are logged and do not propagate.
+- **Errors**: invalid input raises `GenAITelemetryError`, a `ValueError` subclass with a stable `code`.
+- **Side effects**: logging through `getLogger(__name__)` with a NullHandler. No other I/O.
 
 ## Decisions
 
-Architecture decisions are recorded in [decisions/](decisions/) as numbered ADRs.
+Architecture decisions are meant to be recorded as numbered ADRs; no ADR files were part of the source snapshot used for this document.
