@@ -169,7 +169,7 @@ def test_record_response_rejects_bad_input(kwargs: dict[str, Any]) -> None:
     with telemetry.llm_span("chat", "m") as llm:
         assert llm.input_tokens is None
         with pytest.raises(GenAITelemetryError) as info:
-            llm.record_response(response_model="ok", **kwargs)
+            llm.record_response(**{"response_model": "ok", **kwargs})
         assert info.value.code == "invalid_usage"
     assert "gen_ai.response.model" not in tracer.spans[0].attributes
     assert "error.type" not in tracer.spans[0].attributes
