@@ -50,8 +50,8 @@ def test_version_and_exports() -> None:
 
 def test_attribute_constants() -> None:
     assert attrs.GEN_AI_PROVIDER_NAME == "gen_ai.provider.name"
-    assert attrs.GEN_AI_TOKEN_TYPE == "gen_ai.token.type"
-    assert attrs.LLM_OPERATIONS == {"chat", "text_completion", "embeddings", "generate_content"}
+    assert attrs.GEN_AI_TOKEN_TYPE == "gen_ai.token.type"  # noqa: S105
+    assert {"chat", "text_completion", "embeddings", "generate_content"} == attrs.LLM_OPERATIONS
 
 
 def test_llm_span_records_name_kind_and_attributes() -> None:
@@ -107,7 +107,9 @@ def test_strings_are_cut_to_max_attribute_chars() -> None:
         max_attribute_chars=4,
     )
     with telemetry.llm_span("chat", "m" * 100, server_address="a" * 100) as llm:
-        llm.record_response(response_model="r" * 100, response_id="i" * 100, finish_reasons=["s" * 9])
+        llm.record_response(
+            response_model="r" * 100, response_id="i" * 100, finish_reasons=["s" * 9]
+        )
     span = tracer.spans[0]
     assert span.name == "chat mmmm"
     assert span.attributes["gen_ai.provider.name"] == "pppp"
@@ -228,9 +230,11 @@ def test_keyboard_interrupt_is_not_recorded_as_error() -> None:
 
 def test_tool_span_inside_llm_span() -> None:
     telemetry, tracer, _ = make()
-    with telemetry.llm_span("chat", "gpt-x"):
-        with telemetry.tool_span("search", call_id="c1") as tool:
-            assert tool.is_recording()
+    with (
+        telemetry.llm_span("chat", "gpt-x"),
+        telemetry.tool_span("search", call_id="c1") as tool,
+    ):
+        assert tool.is_recording()
     llm_rec, tool_rec = tracer.spans
     assert tool_rec.name == "execute_tool search"
     assert tool_rec.kind == SpanKind.INTERNAL

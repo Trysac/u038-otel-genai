@@ -23,14 +23,14 @@ GEN_AI_TOOL_CALL_ID = "gen_ai.tool.call.id"
 GEN_AI_INPUT_MESSAGES = "gen_ai.input.messages"
 GEN_AI_OUTPUT_MESSAGES = "gen_ai.output.messages"
 ERROR_TYPE = "error.type"
-GEN_AI_TOKEN_TYPE = "gen_ai.token.type"
+GEN_AI_TOKEN_TYPE = "gen_ai.token.type"  # noqa: S105
 
-TOKEN_TYPE_INPUT = "input"
-TOKEN_TYPE_OUTPUT = "output"
+TOKEN_TYPE_INPUT = "input"  # noqa: S105
+TOKEN_TYPE_OUTPUT = "output"  # noqa: S105
 
-METRIC_TOKEN_USAGE = "gen_ai.client.token.usage"
+METRIC_TOKEN_USAGE = "gen_ai.client.token.usage"  # noqa: S105
 METRIC_OPERATION_DURATION = "gen_ai.client.operation.duration"
-UNIT_TOKEN = "{token}"
+UNIT_TOKEN = "{token}"  # noqa: S105
 UNIT_SECONDS = "s"
 
 OPERATION_CHAT = "chat"
