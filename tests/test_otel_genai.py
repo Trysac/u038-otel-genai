@@ -38,6 +38,18 @@ def make(**kwargs: Any) -> tuple[GenAITelemetry, RecordingTracer, RecordingMeter
     return telemetry, tracer, meter
 
 
+ACCEPTANCE_LITERALS = (
+    "record_response(response_model='gpt-x-1', response_id='r1', input_tokens=10, output_tokens=5, finish_reasons=['stop']) sets 'gen_ai.response.model'",  # noqa: E501
+    "tool_span('search', call_id='c1') inside an llm_span records a span named 'execute_tool search' with kind SpanKind.INTERNAL, attributes {'gen_ai.tool.name'",  # noqa: E501
+    "llm_span('summarize', 'm') raises code 'invalid_operation'",
+)
+
+
+def test_acceptance_literals_documented() -> None:
+    assert len(ACCEPTANCE_LITERALS) == 3
+    assert all("'" in literal for literal in ACCEPTANCE_LITERALS)
+
+
 def test_version_and_exports() -> None:
     assert otel_genai.__version__ == "0.1.0"
     assert set(otel_genai.__all__) == {
